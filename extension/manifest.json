@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "SAP E2E Session Capture",
+  "version": "1.0.0",
+  "description": "Auto-captures JSESSIONID from SAP landscapes and forwards it to the E2E dashboard.",
+  "permissions": ["cookies", "storage", "tabs"],
+  "host_permissions": [
+    "https://*.sapdas-dev.cloud.sap/*",
+    "https://tirottasoftware.github.io/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://tirottasoftware.github.io/scheduler-e2e-dashboard/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  }
+}
