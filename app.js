@@ -455,9 +455,6 @@ function pollUntilDone(landscapeId, runId, runUrl, runNumber) {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 async function init() {
-  const bookmarkletEl = document.getElementById('bookmarkletInlineLink');
-  if (bookmarkletEl) bookmarkletEl.href = buildBookmarkletHref();
-
   let landscapes = [];
   try {
     landscapes = await fetch('landscapes.json').then(r => r.json());
@@ -534,10 +531,6 @@ async function init() {
   document.getElementById('modalClose').addEventListener('click', closeRunModal);
   document.getElementById('runModalBackdrop').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeRunModal();
-  });
-
-  document.getElementById('scrollToBookmarklet')?.addEventListener('click', () => {
-    closeRunModal();
   });
 
   // ── Settings ──
