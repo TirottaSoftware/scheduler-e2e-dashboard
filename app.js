@@ -96,17 +96,32 @@ async function dispatchWorkflow(landscapeId, jsessionid, landscapeUrl, landscape
 }
 
 async function findRunAfter(prevRunId) {
-  for (let i = 0; i < 12; i++) {
-    await sleep(2500);
-    const res = await ghFetch(
-      `/repos/${GH_OWNER}/${GH_REPO}/actions/runs?event=workflow_dispatch&per_page=5`
-    );
-    if (!res.ok) continue;
+  let lastError = null;
+  // 20 attempts × 3s = 60s total
+  for (let i = 0; i < 20; i++) {
+    await sleep(3000);
+    let res;
+    try {
+      res = await ghFetch(
+        `/repos/${GH_OWNER}/${GH_REPO}/actions/runs?event=workflow_dispatch&per_page=5`
+      );
+    } catch (e) {
+      lastError = e.message;
+      continue;
+    }
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      lastError = body.message || `HTTP ${res.status}`;
+      continue;
+    }
     const data = await res.json();
     const run = (data.workflow_runs || []).find(r => !prevRunId || r.id > prevRunId);
-    if (run) return run;
+    if (run) return { run, error: null };
   }
-  return null;
+  const reason = lastError
+    ? `Runs API error: ${lastError}`
+    : 'No new run appeared within 60 s — the workflow may not have a runner available.';
+  return { run: null, error: reason };
 }
 
 async function pollRun(runId) {
@@ -220,9 +235,10 @@ async function startRun(jsessionid) {
   setRunStatus('Finding run…', 'Waiting for GitHub to register the workflow run.');
   document.getElementById('runBtn').disabled = true;
 
-  const run = await findRunAfter(prevRunId);
+  const { run, error } = await findRunAfter(prevRunId);
   if (!run) {
-    setRunStatus('Could not find run', 'The workflow may still have been dispatched — check GitHub Actions directly.');
+    const actionsUrl = `https://${GH_HOST}/${GH_OWNER}/${GH_REPO}/actions`;
+    setRunStatus('Could not find run', error, actionsUrl);
     return;
   }
 
