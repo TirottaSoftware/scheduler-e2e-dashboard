@@ -1,9 +1,9 @@
 const STORAGE_KEY = 'e2e_dashboard_config';
 const WORKFLOW_FILE = 'e2e-tests.yml';
 
-const GH_HOST  = 'github.tools.sap';
-const GH_OWNER = 'I759727';
-const GH_REPO  = 'E2E-Testing-Dashboard';
+const GH_HOST  = 'github.com';
+const GH_OWNER = 'TirottaSoftware';
+const GH_REPO  = 'scheduler-e2e-dashboard';
 
 // ── Config (stored in localStorage — token only) ──────────────────────────────
 
@@ -23,7 +23,7 @@ function isConfigured() {
 // ── Bookmarklet ───────────────────────────────────────────────────────────────
 
 function buildBookmarkletHref() {
-  const code = `(function(){
+  const code = String.raw`(function(){
     var c=document.cookie.split(';').find(function(s){return s.trim().startsWith('JSESSIONID=');});
     if(c){
       var v=c.trim().split('=').slice(1).join('=');
@@ -35,10 +35,11 @@ function buildBookmarkletHref() {
         setTimeout(function(){b.remove();},2500);
       }).catch(function(){prompt('Copy your JSESSIONID:',v);});
     } else {
-      alert('No JSESSIONID cookie found.\\nMake sure you are logged into this SAP landscape.');
+      alert('No JSESSIONID cookie found.\nMake sure you are logged into this SAP landscape.');
     }
   })();`.replace(/\s+/g, ' ');
-  return 'javascript:' + code;
+  // bookmarklet href intentionally uses javascript: protocol
+  return 'javascript:' + code; // NOSONAR
 }
 
 // ── Run state ─────────────────────────────────────────────────────────────────
@@ -60,7 +61,7 @@ async function ghFetch(path, options = {}) {
     headers: {
       Accept: 'application/vnd.github+json',
       Authorization: `Bearer ${token}`,
-      ...(options.headers || {}),
+      ...(options.headers),
     },
   });
   return res;
