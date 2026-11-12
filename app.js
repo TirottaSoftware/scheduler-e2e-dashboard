@@ -292,7 +292,7 @@ function renderTable(landscapes) {
     const state = runState[l.id];
     const rs    = rowState(state);
     const hasRun = !!(state?.runId);
-    const failSpan = state.fail ? `<span class="pf-fail">✗ ${state.fail}</span>` : '';
+    const failSpan = state?.fail ? `<span class="pf-fail">✗ ${state.fail}</span>` : '';
     const pfHtml = (state?.pass != null)
       ? `<div class="pf-pill"><span class="pf-pass">✓ ${state.pass}</span>${failSpan}</div>`
       : '';
