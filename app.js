@@ -455,7 +455,7 @@ function pollUntilDone(landscapeId, runId, runUrl, runNumber) {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 async function init() {
-  document.getElementById('bookmarkletLink').href = buildBookmarkletHref();
+  document.getElementById('bookmarkletInlineLink').href = buildBookmarkletHref();
 
   let landscapes = [];
   try {
@@ -535,9 +535,8 @@ async function init() {
     if (e.target === e.currentTarget) closeRunModal();
   });
 
-  document.getElementById('scrollToBookmarklet').addEventListener('click', () => {
+  document.getElementById('scrollToBookmarklet')?.addEventListener('click', () => {
     closeRunModal();
-    document.querySelector('.bookmarklet-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
 
   // ── Settings ──
