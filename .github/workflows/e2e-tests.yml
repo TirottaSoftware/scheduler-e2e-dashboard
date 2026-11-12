@@ -1,0 +1,30 @@
+name: E2E Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      jsessionid:
+        description: 'JSESSIONID cookie value'
+        required: true
+        type: string
+      landscape_url:
+        description: 'SAP landscape base URL (e.g. https://xxx.eu12.sapdas-dev.cloud.sap)'
+        required: true
+        type: string
+      landscape_name:
+        description: 'Landscape display name (for log labelling)'
+        required: false
+        type: string
+        default: 'unknown'
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Run E2E Tests — ${{ inputs.landscape_name }}
+        run: bash tests.sh "${{ inputs.jsessionid }}" "${{ inputs.landscape_url }}"
