@@ -30,27 +30,6 @@ function getCachedSession(landscapeId) {
   return loadSessions()[landscapeId] || null;
 }
 
-// ── Bookmarklet ───────────────────────────────────────────────────────────────
-
-function buildBookmarkletHref() {
-  const code = String.raw`(function(){
-    var c=document.cookie.split(';').find(function(s){return s.trim().startsWith('JSESSIONID=');});
-    if(c){
-      var v=c.trim().split('=').slice(1).join('=');
-      navigator.clipboard.writeText(v).then(function(){
-        var b=document.createElement('div');
-        b.style.cssText='position:fixed;top:20px;right:20px;z-index:999999;background:#2f81f7;color:#fff;padding:10px 16px;border-radius:6px;font:600 13px/1.4 sans-serif;box-shadow:0 4px 12px rgba(0,0,0,0.4)';
-        b.textContent='✓ JSESSIONID copied to clipboard';
-        document.body.appendChild(b);
-        setTimeout(function(){b.remove();},2500);
-      }).catch(function(){prompt('Copy your JSESSIONID:',v);});
-    } else {
-      alert('No JSESSIONID cookie found.\nMake sure you are logged into this SAP landscape.');
-    }
-  })();`.replace(/\s+/g, ' ');
-  return 'javascript:' + code; // NOSONAR — bookmarklet intentionally uses javascript: protocol
-}
-
 // ── Run state ─────────────────────────────────────────────────────────────────
 
 // { [landscapeId]: { runId, runNumber, status, conclusion, url, startedAt, pass, fail } }
