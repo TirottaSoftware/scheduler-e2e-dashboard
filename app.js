@@ -1,7 +1,11 @@
 const STORAGE_KEY = 'e2e_dashboard_config';
 const WORKFLOW_FILE = 'e2e-tests.yml';
 
-// ── Config (stored in localStorage) ──────────────────────────────────────────
+const GH_HOST  = 'github.tools.sap';
+const GH_OWNER = 'I759727';
+const GH_REPO  = 'E2E-Testing-Dashboard';
+
+// ── Config (stored in localStorage — token only) ──────────────────────────────
 
 function loadConfig() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
@@ -13,8 +17,7 @@ function saveConfig(cfg) {
 }
 
 function isConfigured() {
-  const c = loadConfig();
-  return !!(c.owner && c.repo && c.token);
+  return !!loadConfig().token;
 }
 
 // ── Bookmarklet ───────────────────────────────────────────────────────────────
@@ -46,11 +49,8 @@ const runState = {};
 // ── GitHub API ────────────────────────────────────────────────────────────────
 
 function apiBase() {
-  const { host } = loadConfig();
-  // GitHub Enterprise: https://HOSTNAME/api/v3
-  // github.com:        https://api.github.com
-  if (!host || host === 'github.com') return 'https://api.github.com';
-  return `https://${host}/api/v3`;
+  if (GH_HOST === 'github.com') return 'https://api.github.com';
+  return `https://${GH_HOST}/api/v3`;
 }
 
 async function ghFetch(path, options = {}) {
@@ -67,10 +67,9 @@ async function ghFetch(path, options = {}) {
 }
 
 async function dispatchWorkflow(landscapeId, jsessionid, landscapeUrl, landscapeName) {
-  const { owner, repo } = loadConfig();
   const before = new Date().toISOString();
 
-  const res = await ghFetch(`/repos/${owner}/${repo}/actions/workflows/${WORKFLOW_FILE}/dispatches`, {
+  const res = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -88,12 +87,10 @@ async function dispatchWorkflow(landscapeId, jsessionid, landscapeUrl, landscape
 }
 
 async function findRunAfter(before) {
-  const { owner, repo } = loadConfig();
-  // Poll until GitHub creates the run (may take a couple seconds)
   for (let i = 0; i < 12; i++) {
     await sleep(2500);
     const res = await ghFetch(
-      `/repos/${owner}/${repo}/actions/runs?event=workflow_dispatch&per_page=5`
+      `/repos/${GH_OWNER}/${GH_REPO}/actions/runs?event=workflow_dispatch&per_page=5`
     );
     if (!res.ok) continue;
     const data = await res.json();
@@ -104,8 +101,7 @@ async function findRunAfter(before) {
 }
 
 async function pollRun(runId) {
-  const { owner, repo } = loadConfig();
-  const res = await ghFetch(`/repos/${owner}/${repo}/actions/runs/${runId}`);
+  const res = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/actions/runs/${runId}`);
   if (!res.ok) return null;
   return res.json();
 }
@@ -182,11 +178,7 @@ function closeRunModal() {
 }
 
 function openSettingsModal() {
-  const c = loadConfig();
-  document.getElementById('ghHost').value  = c.host  || '';
-  document.getElementById('ghOwner').value = c.owner || '';
-  document.getElementById('ghRepo').value  = c.repo  || '';
-  document.getElementById('ghToken').value = c.token || '';
+  document.getElementById('ghToken').value = loadConfig().token || '';
   document.getElementById('settingsModalBackdrop').style.display = 'flex';
 }
 
@@ -341,12 +333,9 @@ async function init() {
   });
 
   document.getElementById('settingsSaveBtn').addEventListener('click', () => {
-    const host  = document.getElementById('ghHost').value.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
-    const owner = document.getElementById('ghOwner').value.trim();
-    const repo  = document.getElementById('ghRepo').value.trim();
     const token = document.getElementById('ghToken').value.trim();
-    if (!host || !owner || !repo || !token) return;
-    saveConfig({ host, owner, repo, token });
+    if (!token) return;
+    saveConfig({ token });
     document.getElementById('configBanner').style.display = 'none';
     closeSettingsModal();
   });
