@@ -45,14 +45,21 @@ const runState = {};
 
 // ── GitHub API ────────────────────────────────────────────────────────────────
 
+function apiBase() {
+  const { host } = loadConfig();
+  // GitHub Enterprise: https://HOSTNAME/api/v3
+  // github.com:        https://api.github.com
+  if (!host || host === 'github.com') return 'https://api.github.com';
+  return `https://${host}/api/v3`;
+}
+
 async function ghFetch(path, options = {}) {
   const { token } = loadConfig();
-  const res = await fetch(`https://api.github.com${path}`, {
+  const res = await fetch(`${apiBase()}${path}`, {
     ...options,
     headers: {
       Accept: 'application/vnd.github+json',
       Authorization: `Bearer ${token}`,
-      'X-GitHub-Api-Version': '2022-11-28',
       ...(options.headers || {}),
     },
   });
@@ -176,8 +183,9 @@ function closeRunModal() {
 
 function openSettingsModal() {
   const c = loadConfig();
+  document.getElementById('ghHost').value  = c.host  || '';
   document.getElementById('ghOwner').value = c.owner || '';
-  document.getElementById('ghRepo').value = c.repo || '';
+  document.getElementById('ghRepo').value  = c.repo  || '';
   document.getElementById('ghToken').value = c.token || '';
   document.getElementById('settingsModalBackdrop').style.display = 'flex';
 }
@@ -333,11 +341,12 @@ async function init() {
   });
 
   document.getElementById('settingsSaveBtn').addEventListener('click', () => {
+    const host  = document.getElementById('ghHost').value.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
     const owner = document.getElementById('ghOwner').value.trim();
     const repo  = document.getElementById('ghRepo').value.trim();
     const token = document.getElementById('ghToken').value.trim();
-    if (!owner || !repo || !token) return;
-    saveConfig({ owner, repo, token });
+    if (!host || !owner || !repo || !token) return;
+    saveConfig({ host, owner, repo, token });
     document.getElementById('configBanner').style.display = 'none';
     closeSettingsModal();
   });

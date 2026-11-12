@@ -104,6 +104,7 @@
             <div class="step-content">
               <p class="step-title">Paste your JSESSIONID</p>
               <div class="input-row">
+                <label for="jsessionidInput" class="sr-only">JSESSIONID</label>
                 <input
                   type="text"
                   class="input"
@@ -156,6 +157,10 @@
       <div class="modal-body">
         <p class="settings-desc">These values are stored in your browser only and never sent anywhere except the GitHub API.</p>
 
+        <label class="label" for="ghHost">GitHub Host</label>
+        <input type="text" class="input" id="ghHost" placeholder="github.tools.sap" />
+        <p class="field-hint">For GitHub Enterprise, enter the hostname only (e.g. <code>github.tools.sap</code>). For github.com, enter <code>github.com</code>.</p>
+
         <label class="label" for="ghOwner">Repository Owner (org or user)</label>
         <input type="text" class="input" id="ghOwner" placeholder="my-org" />
 
@@ -163,8 +168,8 @@
         <input type="text" class="input" id="ghRepo" placeholder="e2e-dashboard" />
 
         <label class="label" for="ghToken">Personal Access Token (PAT)</label>
-        <input type="password" class="input" id="ghToken" placeholder="github_pat_…" />
-        <p class="field-hint">Needs <code>repo</code> scope (or <code>actions:write</code> + <code>repo:read</code>). <a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener">Create one →</a></p>
+        <input type="password" class="input" id="ghToken" placeholder="your token…" />
+        <p class="field-hint">Needs <code>repo</code> scope (or <code>actions:write</code> + <code>repo:read</code>).</p>
       </div>
       <div class="modal-footer">
         <button class="btn btn-ghost" id="settingsCancelBtn">Cancel</button>
