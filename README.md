@@ -2,6 +2,8 @@
 
 A browser-based dashboard for triggering and monitoring E2E tests against SAP landscape environments — no local tooling required. Tests run on GitHub Actions; you watch the results in real time from any browser.
 
+**Live app:** https://tirottasoftware.github.io/scheduler-e2e-dashboard/
+
 ---
 
 ## Table of Contents
