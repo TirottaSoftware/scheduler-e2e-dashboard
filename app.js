@@ -455,7 +455,8 @@ function pollUntilDone(landscapeId, runId, runUrl, runNumber) {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 async function init() {
-  document.getElementById('bookmarkletInlineLink').href = buildBookmarkletHref();
+  const bookmarkletEl = document.getElementById('bookmarkletInlineLink');
+  if (bookmarkletEl) bookmarkletEl.href = buildBookmarkletHref();
 
   let landscapes = [];
   try {
