@@ -66,8 +66,17 @@ async function ghFetch(path, options = {}) {
   return res;
 }
 
+async function getLatestRunId() {
+  const res = await ghFetch(
+    `/repos/${GH_OWNER}/${GH_REPO}/actions/runs?event=workflow_dispatch&per_page=1`
+  );
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.workflow_runs?.[0]?.id ?? null;
+}
+
 async function dispatchWorkflow(landscapeId, jsessionid, landscapeUrl, landscapeName) {
-  const before = new Date().toISOString();
+  const prevRunId = await getLatestRunId();
 
   const res = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches`, {
     method: 'POST',
@@ -83,10 +92,10 @@ async function dispatchWorkflow(landscapeId, jsessionid, landscapeUrl, landscape
     throw new Error(body.message || `GitHub API error ${res.status}`);
   }
 
-  return before;
+  return prevRunId;
 }
 
-async function findRunAfter(before) {
+async function findRunAfter(prevRunId) {
   for (let i = 0; i < 12; i++) {
     await sleep(2500);
     const res = await ghFetch(
@@ -94,7 +103,7 @@ async function findRunAfter(before) {
     );
     if (!res.ok) continue;
     const data = await res.json();
-    const run = (data.workflow_runs || []).find(r => r.created_at >= before);
+    const run = (data.workflow_runs || []).find(r => !prevRunId || r.id > prevRunId);
     if (run) return run;
   }
   return null;
@@ -206,12 +215,12 @@ function setRunStatus(title, desc, link) {
 
 async function startRun(jsessionid) {
   const l = activeLandscape;
-  const before = await dispatchWorkflow(l.id, jsessionid, l.baseUrl, l.name);
+  const prevRunId = await dispatchWorkflow(l.id, jsessionid, l.baseUrl, l.name);
 
   setRunStatus('Finding run…', 'Waiting for GitHub to register the workflow run.');
   document.getElementById('runBtn').disabled = true;
 
-  const run = await findRunAfter(before);
+  const run = await findRunAfter(prevRunId);
   if (!run) {
     setRunStatus('Could not find run', 'The workflow may still have been dispatched — check GitHub Actions directly.');
     return;
