@@ -10,11 +10,16 @@
   <div class="app">
     <header class="header">
       <div class="header-left">
-        <h1 class="header-title">E2E Tests</h1>
-        <span class="header-subtitle">SAP Landscape Runner</span>
+        <div class="header-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div>
+          <h1 class="header-title">E2E Dashboard</h1>
+          <span class="header-subtitle">SAP Landscape Runner</span>
+        </div>
       </div>
       <button class="btn btn-ghost" id="settingsBtn" title="Configure GitHub settings">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
         </svg>
         Settings
@@ -23,13 +28,13 @@
 
     <main class="main">
       <div id="configBanner" class="banner banner-warning" style="display:none">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        GitHub settings not configured. <button class="link-btn" id="configBannerBtn">Set up now</button> to enable test runs.
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        GitHub token not configured. <button class="link-btn" id="configBannerBtn">Set up now</button> to enable test runs.
       </div>
 
       <div class="bookmarklet-card">
         <div class="bookmarklet-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
         </div>
         <div class="bookmarklet-content">
           <p class="bookmarklet-title">Install the JSESSIONID Bookmarklet</p>
@@ -45,19 +50,47 @@
           <thead>
             <tr>
               <th>Environment</th>
-              <th>URL</th>
-              <th>Last Run</th>
               <th>Status</th>
+              <th>Last Run</th>
               <th class="th-actions">Actions</th>
             </tr>
           </thead>
           <tbody id="landscapeTableBody">
-            <tr><td colspan="5" class="loading-cell">Loading landscapes…</td></tr>
+            <tr><td colspan="4" class="loading-cell">Loading landscapes…</td></tr>
           </tbody>
         </table>
       </div>
     </main>
   </div>
+
+  <!-- Log Sidebar -->
+  <div class="log-overlay" id="logOverlay"></div>
+  <aside class="log-sidebar" id="logSidebar" aria-label="Run logs">
+    <div class="log-sidebar-header">
+      <div class="log-sidebar-meta">
+        <span class="log-sidebar-title" id="logSidebarTitle">Run Logs</span>
+        <span class="log-sidebar-sub" id="logSidebarSub"></span>
+      </div>
+      <div class="log-sidebar-btns">
+        <a class="btn btn-ghost btn-sm" id="logSidebarGhLink" target="_blank" rel="noopener" style="display:none">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          GitHub
+        </a>
+        <button class="btn btn-ghost btn-sm" id="logSidebarClose">✕</button>
+      </div>
+    </div>
+    <div class="log-toolbar" id="logToolbar" style="display:none">
+      <span class="log-stat log-stat-pass" id="logStatPass"></span>
+      <span class="log-stat log-stat-fail" id="logStatFail"></span>
+      <button class="btn btn-ghost btn-sm" id="jumpToErrorBtn" style="display:none">↓ Jump to errors</button>
+    </div>
+    <div class="log-terminal" id="logTerminal">
+      <div class="log-loading" id="logLoading">
+        <div class="spinner"></div>
+        <span>Loading logs…</span>
+      </div>
+    </div>
+  </aside>
 
   <!-- Run Modal -->
   <div class="modal-backdrop" id="runModalBackdrop" style="display:none">
@@ -71,76 +104,73 @@
       </div>
 
       <div class="modal-body">
-        <div class="steps">
-          <!-- Step 1 -->
-          <div class="step" id="step1">
+        <div class="steps" id="stepsSection">
+          <div class="step">
             <div class="step-number">1</div>
             <div class="step-content">
               <p class="step-title">Log in to the SAP landscape</p>
-              <p class="step-desc">This opens the SAP login page in a new tab. Sign in with your credentials.</p>
+              <p class="step-desc">Opens the SAP login page in a new tab. Sign in with your credentials.</p>
               <button class="btn btn-primary" id="openLoginBtn">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                 Open SAP Login
               </button>
             </div>
           </div>
 
-          <!-- Step 2 -->
-          <div class="step" id="step2">
+          <div class="step">
             <div class="step-number">2</div>
             <div class="step-content">
               <p class="step-title">Copy your JSESSIONID</p>
-              <p class="step-desc">Switch to the SAP tab and click the <strong>📋 Copy JSESSIONID</strong> bookmark. Your session ID will be copied to clipboard automatically.</p>
+              <p class="step-desc">On the SAP tab, click the <strong>📋 Copy JSESSIONID</strong> bookmark to auto-copy your session ID.</p>
               <div class="step-hint">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                Don't have the bookmarklet yet? <button class="link-btn" id="scrollToBookmarklet">Install it</button> from the banner above.
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Don't have the bookmarklet? <button class="link-btn" id="scrollToBookmarklet">Install it</button> from the card above.
               </div>
             </div>
           </div>
 
-          <!-- Step 3 -->
-          <div class="step" id="step3">
+          <div class="step">
             <div class="step-number">3</div>
             <div class="step-content">
               <p class="step-title">Paste your JSESSIONID</p>
               <div class="input-row">
                 <label for="jsessionidInput" class="sr-only">JSESSIONID</label>
-                <input
-                  type="text"
-                  class="input"
-                  id="jsessionidInput"
-                  placeholder="Paste JSESSIONID here…"
-                  autocomplete="off"
-                  spellcheck="false"
-                />
+                <input type="text" class="input" id="jsessionidInput" placeholder="Paste JSESSIONID here…" autocomplete="off" spellcheck="false" />
                 <button class="btn btn-ghost" id="pasteBtn" title="Paste from clipboard">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
                   Paste
                 </button>
               </div>
+              <p class="cached-hint" id="cachedHint" style="display:none"></p>
             </div>
           </div>
         </div>
 
-        <!-- Run status -->
         <div id="runStatus" class="run-status" style="display:none">
           <div class="run-status-inner">
-            <div class="spinner" id="runSpinner"></div>
+            <div class="spinner" id="runSpinner" style="display:none"></div>
             <div>
-              <p class="run-status-title" id="runStatusTitle">Dispatching…</p>
+              <p class="run-status-title" id="runStatusTitle"></p>
               <p class="run-status-desc" id="runStatusDesc"></p>
             </div>
           </div>
-          <a id="runStatusLink" class="btn btn-ghost btn-sm" style="display:none" target="_blank" rel="noopener">
-            View on GitHub →
-          </a>
+          <div class="run-status-actions">
+            <button class="btn btn-ghost btn-sm" id="openLogsBtn" style="display:none">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+              Open Logs
+            </button>
+            <a id="runStatusLink" class="btn btn-ghost btn-sm" style="display:none" target="_blank" rel="noopener">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              GitHub
+            </a>
+          </div>
         </div>
       </div>
 
       <div class="modal-footer">
         <button class="btn btn-ghost" id="cancelBtn">Cancel</button>
         <button class="btn btn-primary" id="runBtn" disabled>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           Run Tests
         </button>
       </div>
@@ -156,7 +186,6 @@
       </div>
       <div class="modal-body">
         <p class="settings-desc">Your token is stored in this browser only and used solely to trigger GitHub Actions.</p>
-
         <label class="label" for="ghToken">Personal Access Token (PAT)</label>
         <input type="password" class="input" id="ghToken" placeholder="your token…" />
         <p class="field-hint">Needs <code>repo</code> scope (or <code>actions:write</code> + <code>repo:read</code>).</p>
